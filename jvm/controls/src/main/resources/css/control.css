@@ -134,6 +134,9 @@
     -fx-border-width: 2px;
     -fx-underline: false;
 }
+.btn--secondary:disabled .ikonli-font-icon {
+    -fx-fill: -wa-black-60;
+}
 .btn--borderless {
     -fx-border-width: 0;
 }

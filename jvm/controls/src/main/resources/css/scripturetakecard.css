@@ -1,51 +1,55 @@
-@import "root.css"
-
 .card--scripture-take {
     -fx-background-color: -wa-white;
     -fx-effect: -wa-level2;
-    -fx-font-size: 1em;
+    -fx-background-radius: 6px;
+    -fx-padding: 10px;
+}
+
+.card--scripture-take__take-drag .ikonli-font-icon {
+    -fx-font-size: 26px;
 }
 
 .card--scripture-take__btn {
-    -fx-background-color: #FEFEFE;
-    -fx-effect: -wa-level2;
-    -fx-background-radius: 5px;
-    -fx-border-radius: 5px;
-    -fx-font-size: 1.25em;
-    -fx-font-weight: bold;
+    -fx-background-color: -wa-white;
+    -fx-border-radius: 6px;
+    -fx-border-color: -wa-black-50;
+    -fx-border-width: 2px;
+    -fx-pref-width: 48px;
+    -fx-pref-height: 48px;
 }
 
 .card--scripture-take__btn:hover {
-    -fx-effect: -wa-level4;
+    -fx-background-color: -wa-black-05;
 }
 
-.card--scripture-take__btn--play {
-    -fx-background-color: -wa-white;
+.card--scripture-take__btn:pressed {
+    -fx-background-color: -wa-black-10;
 }
 
-.card--scripture-take__btn--edit {
-    -fx-background-color: -wa-white;
-    -fx-text-fill: #58BD2F;
-    -fx-icon-color: #58BD2F;
+.card--scripture-take__btn .ikonli-font-icon {
+    -fx-font-size: 20px;
+    -fx-fill: -wa-black;
 }
 
-.card--scripture-take__btn--delete {
-    -fx-font-size: 16px;
+.card--scripture-take__delete-icon {
     -fx-background-color: -wa-white;
-    -fx-font-weight: normal;
-    -fx-icon-size: 26px;
-    -fx-effect: -wa-level0;
+    -fx-border-color: -wa-white;
+}
+
+.card--scripture-take__delete-icon .ikonli-font-icon {
+    -fx-font-size: 24px;
+    -fx-fill: -wa-black;
 }
 
 .card--scripture-take__take-label {
     -fx-font-size: 16px;
-    -fx-font-weight: bold;
-    -fx-icon-size: 26px;
 }
 
-.card--scripture-take__timestamp-label {
-    -fx-font-size: 12px;
-    -fx-font-weight: lighter;
-    -fx-font-style: italic;
-    -fx-text-fill: -wa-gray;
+.card--scripture-take--empty {
+    -fx-fill: -wa-black-05;
+    -fx-arc-width: 10px;
+    -fx-arc-height: 10px;
+    -fx-pref-width: 200px;
+    -fx-pref-height: 144px;
 }
+

@@ -5,16 +5,14 @@ import javafx.scene.control.Control
 import javafx.scene.control.Skin
 import org.wycliffeassociates.otter.common.data.workbook.Take
 import org.wycliffeassociates.otter.common.device.IAudioPlayer
-import org.wycliffeassociates.otter.jvm.controls.skins.cards.ScriptureTakeCardSkin
-import tornadofx.*
+import org.wycliffeassociates.otter.jvm.controls.skins.cards.ResourceTakeCardSkin
 
-class ScriptureTakeCard : Control() {
+class ResourceTakeCard : Control() {
 
     private val takeProperty = SimpleObjectProperty<Take>()
     private val audioPlayerProperty = SimpleObjectProperty<IAudioPlayer>()
     private val takeNumberProperty = SimpleStringProperty("Take 01")
     private val isDraggingProperty = SimpleBooleanProperty(false)
-    private val allowMarkerProperty = SimpleBooleanProperty(true)
 
     fun takeProperty(): ObjectProperty<Take> {
         return takeProperty
@@ -32,11 +30,7 @@ class ScriptureTakeCard : Control() {
         return isDraggingProperty
     }
 
-    fun allowMarkerProperty(): BooleanProperty {
-        return allowMarkerProperty
-    }
-
     override fun createDefaultSkin(): Skin<*> {
-        return ScriptureTakeCardSkin(this)
+        return ResourceTakeCardSkin(this)
     }
 }

@@ -4,20 +4,13 @@ import com.jfoenix.controls.JFXSnackbar
 import com.jfoenix.controls.JFXSnackbarLayout
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleObjectProperty
-import javafx.geometry.HPos
-import javafx.geometry.Pos
-import javafx.geometry.VPos
 import javafx.scene.Node
 import javafx.scene.Parent
-import javafx.scene.control.ContentDisplay
 import javafx.scene.control.Control
 import javafx.scene.input.DragEvent
 import javafx.scene.input.Dragboard
 import javafx.scene.input.TransferMode
-import javafx.scene.layout.ColumnConstraints
 import javafx.scene.layout.Priority
-import javafx.scene.layout.Region
-import javafx.scene.layout.RowConstraints
 import javafx.scene.layout.VBox
 import javafx.util.Duration
 import org.kordamp.ikonli.javafx.FontIcon
@@ -33,20 +26,14 @@ import org.wycliffeassociates.otter.jvm.controls.dragtarget.DragTargetBuilder
 import org.wycliffeassociates.otter.jvm.controls.media.SourceContent
 import org.wycliffeassociates.otter.jvm.utils.onChangeAndDoNow
 import org.wycliffeassociates.otter.jvm.workbookapp.SnackbarHandler
-import org.wycliffeassociates.otter.jvm.workbookapp.controls.takecard.TakeCard
-import org.wycliffeassociates.otter.jvm.workbookapp.controls.takecard.TakeCardStyles
 import org.wycliffeassociates.otter.jvm.workbookapp.plugin.PluginClosedEvent
 import org.wycliffeassociates.otter.jvm.workbookapp.plugin.PluginOpenedEvent
-import org.wycliffeassociates.otter.jvm.workbookapp.theme.AppStyles
 import org.wycliffeassociates.otter.jvm.workbookapp.ui.NavigationMediator
 import org.wycliffeassociates.otter.jvm.workbookapp.ui.model.TakeCardModel
-import org.wycliffeassociates.otter.jvm.workbookapp.ui.styles.RecordScriptureStyles
 import org.wycliffeassociates.otter.jvm.workbookapp.ui.viewmodel.AudioPluginViewModel
 import org.wycliffeassociates.otter.jvm.workbookapp.ui.viewmodel.RecordScriptureViewModel
 import org.wycliffeassociates.otter.jvm.workbookapp.ui.viewmodel.WorkbookDataStore
 import tornadofx.*
-
-private const val TAKES_ROW_HEIGHT = 170.0
 
 class RecordScriptureFragment : Fragment() {
     private val logger = LoggerFactory.getLogger(RecordScriptureFragment::class.java)
@@ -71,6 +58,7 @@ class RecordScriptureFragment : Fragment() {
         DragTargetBuilder(DragTargetBuilder.Type.SCRIPTURE_TAKE)
             .build(isDraggingProperty.toBinding())
             .apply {
+                addClass("card--scripture-take--empty")
                 recordableViewModel.selectedTakeProperty.onChangeAndDoNow { take ->
                     /* We can't just add the node being dragged, since the selected take might have just been
                         loaded from the database */
@@ -81,7 +69,6 @@ class RecordScriptureFragment : Fragment() {
     private val dragContainer = VBox().apply {
         this.prefWidthProperty().bind(dragTarget.widthProperty())
         draggingNodeProperty.onChange { draggingNode ->
-            (dragTarget.selectedNodeProperty.get() as? TakeCard)?.simpleAudioPlayer?.close()
             clear()
             draggingNode?.let { add(draggingNode) }
         }
@@ -89,8 +76,6 @@ class RecordScriptureFragment : Fragment() {
 
     private val sourceContent =
         SourceContent().apply {
-            vgrow = Priority.ALWAYS
-
             sourceTextProperty.bind(workbookDataStore.sourceTextBinding())
             audioPlayerProperty.bind(recordableViewModel.sourceAudioPlayerProperty)
 
@@ -110,7 +95,7 @@ class RecordScriptureFragment : Fragment() {
         }
     }
 
-    override val root: Parent = anchorpane {
+    override val root = anchorpane {
         addButtonEventHandlers()
         createSnackBar()
 
@@ -128,10 +113,10 @@ class RecordScriptureFragment : Fragment() {
     }
 
     init {
-        importStylesheet<RecordScriptureStyles>()
-        importStylesheet<TakeCardStyles>()
-        importStylesheet(javaClass.getResource("/css/scripturetakecard.css").toExternalForm())
-        importStylesheet(javaClass.getResource("/css/audioplayer.css").toExternalForm())
+        importStylesheet(resources.get("/css/record-scripture.css"))
+        importStylesheet(resources.get("/css/audioplayer.css"))
+        importStylesheet(resources.get("/css/takecard.css"))
+        importStylesheet(resources.get("/css/scripturetakecard.css"))
 
         isDraggingProperty.onChange {
             if (it) recordableViewModel.stopPlayers()
@@ -171,7 +156,7 @@ class RecordScriptureFragment : Fragment() {
             (it.source as? ScriptureTakeCard)?.let {
                 it.isDraggingProperty().value = false
             }
-            it.setDropCompleted(success)
+            it.isDropCompleted = success
             it.consume()
         }
 
@@ -186,30 +171,31 @@ class RecordScriptureFragment : Fragment() {
             addEventHandler(DragEvent.DRAG_ENTERED) { isDraggingProperty.value = true }
             addEventHandler(DragEvent.DRAG_EXITED) { isDraggingProperty.value = false }
 
-            addClass(RecordScriptureStyles.background)
-
             hgrow = Priority.ALWAYS
+
             // Top items above the alternate takes
             // Drag target and/or selected take, Next Verse Button, Previous Verse Button
             hbox {
-                addClass(RecordScriptureStyles.pageTop)
-                alignment = Pos.CENTER
+                addClass("record-scripture__top")
+
                 // previous verse button
-                button(messages["previousVerse"], AppStyles.backIcon()) {
-                    addClass(RecordScriptureStyles.navigationButton)
+                button(messages["previousVerse"]) {
+                    addClass("btn", "btn--secondary")
+                    graphic = FontIcon(MaterialDesign.MDI_ARROW_LEFT)
                     action {
                         recordScriptureViewModel.previousChunk()
                     }
                     enableWhen(recordScriptureViewModel.hasPrevious)
                 }
+
                 vbox {
                     add(dragTarget)
                 }
 
                 // next verse button
-                button(messages["nextVerse"], AppStyles.forwardIcon()) {
-                    addClass(RecordScriptureStyles.navigationButton)
-                    contentDisplay = ContentDisplay.RIGHT
+                button(messages["nextVerse"]) {
+                    addClass("btn", "btn--secondary")
+                    graphic = FontIcon(MaterialDesign.MDI_ARROW_RIGHT)
                     action {
                         recordScriptureViewModel.nextChunk()
                     }
@@ -217,45 +203,8 @@ class RecordScriptureFragment : Fragment() {
                 }
             }
 
-            gridpane {
-                vgrow = Priority.ALWAYS
-                hgrow = Priority.ALWAYS
-
-                add(takesGrid, 0, 0)
-                add(sourceContent, 0, 1)
-
-                columnConstraints.addAll(
-                    ColumnConstraints(
-                        0.0,
-                        0.0,
-                        Double.MAX_VALUE,
-                        Priority.ALWAYS,
-                        HPos.LEFT,
-                        true
-                    )
-                )
-
-                val takesRowConstraints = RowConstraints(
-                    TAKES_ROW_HEIGHT,
-                    TAKES_ROW_HEIGHT,
-                    Double.MAX_VALUE,
-                    Priority.ALWAYS,
-                    VPos.CENTER,
-                    true
-                )
-
-                val sourceContentRowConstraints = RowConstraints(
-                    Region.USE_COMPUTED_SIZE,
-                    Region.USE_COMPUTED_SIZE,
-                    Region.USE_COMPUTED_SIZE,
-                    Priority.NEVER,
-                    VPos.CENTER,
-                    false
-                )
-
-                rowConstraints.add(takesRowConstraints)
-                rowConstraints.add(sourceContentRowConstraints)
-            }
+            add(takesGrid)
+            add(sourceContent)
         }
     }
 
@@ -274,11 +223,6 @@ class RecordScriptureFragment : Fragment() {
     private fun createTakeCard(take: TakeCardModel): Control {
         return ScriptureTakeCard().apply {
             audioPlayerProperty().set(take.audioPlayer)
-            deleteTextProperty().set(take.deleteText)
-            editTextProperty().set(take.editText)
-            pauseTextProperty().set(take.playText)
-            playTextProperty().set(take.playText)
-            markerTextProperty().set(take.markerText)
             takeProperty().set(take.take)
             takeNumberProperty().set(take.take.number.toString())
             allowMarkerProperty().bind(recordableViewModel.workbookDataStore.activeChunkProperty.isNull)

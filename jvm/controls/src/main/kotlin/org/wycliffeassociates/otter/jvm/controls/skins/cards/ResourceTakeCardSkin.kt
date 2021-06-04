@@ -17,6 +17,7 @@ import javafx.scene.layout.StackPane
 import javafx.scene.paint.Color
 import org.kordamp.ikonli.javafx.FontIcon
 import org.wycliffeassociates.otter.jvm.controls.card.EmptyCardCell
+import org.wycliffeassociates.otter.jvm.controls.card.ResourceTakeCard
 import org.wycliffeassociates.otter.jvm.controls.card.ScriptureTakeCard
 import org.wycliffeassociates.otter.jvm.controls.card.events.DeleteTakeEvent
 import org.wycliffeassociates.otter.jvm.controls.card.events.TakeEvent
@@ -24,7 +25,7 @@ import org.wycliffeassociates.otter.jvm.controls.controllers.AudioPlayerControll
 import org.wycliffeassociates.otter.jvm.utils.onChangeAndDoNow
 import tornadofx.*
 
-class ScriptureTakeCardSkin(val card: ScriptureTakeCard) : SkinBase<ScriptureTakeCard>(card) {
+class ResourceTakeCardSkin(val card: ResourceTakeCard) : SkinBase<ResourceTakeCard>(card) {
 
     lateinit var cardNode: Node
 
@@ -37,9 +38,6 @@ class ScriptureTakeCardSkin(val card: ScriptureTakeCard) : SkinBase<ScriptureTak
 
     @FXML
     lateinit var editBtn: Button
-
-    @FXML
-    lateinit var markerBtn: Button
 
     @FXML
     lateinit var deleteBtn: Button
@@ -68,13 +66,10 @@ class ScriptureTakeCardSkin(val card: ScriptureTakeCard) : SkinBase<ScriptureTak
         initController()
 
         back.apply {
-            addClass("card--scripture-take--empty")
+            addClass("card--resource-take--empty")
             widthProperty().bind(skinnable.widthProperty())
             heightProperty().bind(skinnable.heightProperty())
         }
-
-        markerBtn.visibleProperty().bind(card.allowMarkerProperty())
-        markerBtn.managedProperty().bind(markerBtn.visibleProperty())
     }
 
     fun bindText() {
@@ -116,17 +111,6 @@ class ScriptureTakeCardSkin(val card: ScriptureTakeCard) : SkinBase<ScriptureTak
                         card.audioPlayerProperty().value.load(card.takeProperty().value.file)
                     },
                     TakeEvent.EDIT_TAKE
-                )
-            )
-        }
-        markerBtn.setOnAction {
-            skinnable.fireEvent(
-                TakeEvent(
-                    card.takeProperty().value,
-                    {
-                        card.audioPlayerProperty().value.load(card.takeProperty().value.file)
-                    },
-                    TakeEvent.MARK_TAKE
                 )
             )
         }
@@ -178,7 +162,7 @@ class ScriptureTakeCardSkin(val card: ScriptureTakeCard) : SkinBase<ScriptureTak
     }
 
     private fun loadFXML() {
-        val loader = FXMLLoader(javaClass.getResource("ScriptureTakeCard.fxml"))
+        val loader = FXMLLoader(javaClass.getResource("ResourceTakeCard.fxml"))
         loader.setController(this)
         cardNode = loader.load()
 
