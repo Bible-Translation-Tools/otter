@@ -23,7 +23,7 @@ class WavMetadata(parsableChunks: List<RiffChunk>? = null) {
     }
 
     val totalSize
-        get() = chunks.sumOf { it.totalSize }
+        get() = chunks.sumBy { it.totalSize }
 
     fun parseMetadata(buffer: ByteBuffer) {
         chunks.forEach { it.parse(buffer.slice()) }
